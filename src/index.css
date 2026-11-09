@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Blue */
+  --color-brand: #2563eb; /* main blue (buttons, links) */
+  --color-brand-dark: #1e40af; /* hover, footer, dark sections */
+  --color-brand-light: #60a5fa; /* highlights, icons */
+  --color-brand-soft: #eff6ff; /* light section background */
+
+  /* Neutrals */
+  --color-ink: #0a0a0a; /* black (heading, dark bg) */
+  --color-ink-soft: #1f2937; /* body text on light bg */
+  --color-paper: #ffffff; /* white */
+}
+
+.wrapper {
+  @apply mx-auto w-full max-w-[1400px] px-4 sm:px-4 lg:px-6;
+}
