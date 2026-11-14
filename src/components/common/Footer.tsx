@@ -3,7 +3,6 @@ import {
   FiMapPin,
   FiMail,
   FiPhone,
-  FiGithub,
   FiLinkedin,
   FiFacebook,
   FiInstagram,
@@ -38,23 +37,18 @@ const services = [
 
 const socialLinks = [
   {
-    name: "GitHub",
-    href: "https://github.com/mahfujulhoque12",
-    icon: FiGithub,
-  },
-  {
     name: "LinkedIn",
-    href: "https://www.linkedin.com/",
+    href: "https://www.linkedin.com/company/144104175/admin/dashboard/",
     icon: FiLinkedin,
   },
   {
     name: "Facebook",
-    href: "https://www.facebook.com/",
+    href: "https://www.facebook.com/profile.php?id=61594623055114",
     icon: FiFacebook,
   },
   {
     name: "Instagram",
-    href: "https://www.instagram.com/",
+    href: "#",
     icon: FiInstagram,
   },
 ];
@@ -176,14 +170,14 @@ const Footer = () => {
             <ul className="space-y-5">
               <li>
                 <a
-                  href="mailto:your-email@example.com"
+                  href="mailto:contact.digital.360solutions@gmail.com"
                   className="group flex items-start gap-3 text-sm text-gray-400 transition-colors hover:text-brand-light"
                 >
                   <FiMail
                     size={18}
                     className="mt-0.5 shrink-0 text-brand-light"
                   />
-                  <span>your-email@example.com</span>
+                  <span>contact.digital.360solutions@gmail.com</span>
                 </a>
               </li>
 
