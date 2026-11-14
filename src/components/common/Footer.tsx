@@ -1,6 +1,3 @@
-"use client";
-
-import { useRef } from "react";
 import {
   FiArrowUpRight,
   FiMapPin,
@@ -63,40 +60,10 @@ const socialLinks = [
 ];
 
 const Footer = () => {
-  const footerRef = useRef<HTMLElement>(null);
-
-  useGSAP(
-    () => {
-      gsap.fromTo(
-        ".footer-content",
-        {
-          y: 35,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: footerRef.current,
-            start: "top 85%",
-            once: true,
-          },
-        },
-      );
-    },
-    { scope: footerRef },
-  );
-
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer
-      ref={footerRef}
-      className="relative overflow-hidden bg-[#080f20] text-white"
-    >
+    <footer className="relative overflow-hidden bg-[#080f20] text-white">
       {/* Background Decoration */}
       <div className="pointer-events-none absolute -right-40 -top-40 h-96 w-96 rounded-full bg-brand/10 blur-[100px]" />
 

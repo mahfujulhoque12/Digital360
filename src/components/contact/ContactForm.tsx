@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiArrowRight, FiCheckCircle, FiSend } from "react-icons/fi";
+import axiosInstance from "../../lib/axios";
+import { toast } from "sonner";
+import { FiX } from "react-icons/fi";
 
 type ContactFormData = {
   name: string;
@@ -21,7 +24,9 @@ const services = [
 ];
 
 const ContactForm = () => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitted] = useState(false);
+
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const {
     register,
@@ -41,15 +46,16 @@ const ContactForm = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      setIsSubmitted(false);
+      const response = await axiosInstance.post("/contact", data);
 
-      // TODO: Connect your backend API here.
-      console.log("Contact Form Data:", data);
-
-      setIsSubmitted(true);
-      reset();
+      if (response.data.success) {
+        reset();
+        setIsSuccessModalOpen(true);
+        toast.success("Message submitted successfully!");
+      }
     } catch (error) {
       console.error("Contact form submission failed:", error);
+      toast.error("Failed to send your message. Please try again.");
     }
   };
 
@@ -307,6 +313,96 @@ const ContactForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {isSuccessModalOpen && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-ink/70 px-4 py-6 backdrop-blur-md"
+          onClick={() => setIsSuccessModalOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="success-title"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl animate-[modalIn_0.35s_ease-out]"
+          >
+            {/* Decorative Background */}
+            <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-br from-brand via-blue-500 to-cyan-400" />
+
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full border-[20px] border-white/10" />
+            <div className="absolute -left-10 top-20 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setIsSuccessModalOpen(false)}
+              aria-label="Close success modal"
+              className="absolute right-5 top-5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white transition hover:rotate-90 hover:bg-white/30"
+            >
+              <FiX size={20} />
+            </button>
+
+            <div className="relative px-7 pb-8 pt-12 text-center sm:px-10">
+              {/* Success Icon */}
+              <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-white bg-white shadow-xl">
+                <div className="flex h-16 w-16 animate-[successPop_0.5s_ease-out] items-center justify-center rounded-full bg-green-50 text-green-500">
+                  <FiCheckCircle size={42} strokeWidth={1.8} />
+                </div>
+              </div>
+
+              {/* Heading */}
+              <span className="inline-flex rounded-full bg-green-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-600">
+                Successfully Submitted
+              </span>
+
+              <h2
+                id="success-title"
+                className="mt-5 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl"
+              >
+                Thank You for <span className="text-brand">Reaching Out!</span>
+              </h2>
+
+              <p className="mx-auto mt-4 max-w-sm text-sm leading-7 text-gray-500">
+                Your message has been received successfully. We're excited to
+                learn more about your project and help bring your ideas to life.
+              </p>
+
+              {/* Response Time */}
+              <div className="mt-7 flex items-center gap-4 rounded-2xl border border-brand/10 bg-brand-soft/60 p-4 text-left">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-brand shadow-sm">
+                  <FiSend size={21} />
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-ink">What's Next?</p>
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Our team will review your request and get back to you within
+                    24 hours.
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <button
+                type="button"
+                onClick={() => setIsSuccessModalOpen(false)}
+                className="group mt-7 flex w-full items-center justify-center gap-3 rounded-xl bg-brand px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand/20 transition duration-300 hover:-translate-y-1 hover:bg-brand-dark hover:shadow-xl"
+              >
+                Awesome, Thank You!
+                <FiArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </button>
+
+              <p className="mt-5 text-xs font-medium text-gray-400">
+                We appreciate your trust in us.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

@@ -3,6 +3,7 @@ import type { IconType } from "react-icons";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+
 import {
   FiArrowRight,
   FiArrowUpRight,
@@ -12,12 +13,14 @@ import {
   FiShare2,
   FiTarget,
   FiVideo,
+  FiSmartphone,
 } from "react-icons/fi";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type Category =
   | "Web Development"
+  | "Mobile Development"
   | "SEO"
   | "Social Media"
   | "Graphic Design"
@@ -27,13 +30,13 @@ type Category =
 type Project = {
   title: string;
   category: Category;
-  /** Real image er path (jemon "/projects/nexora.jpg"). Na dile gradient placeholder dekhabe */
   image?: string;
   href: string;
 };
 
 const categoryIcons: Record<Category, IconType> = {
   "Web Development": FiCode,
+  "Mobile Development": FiSmartphone,
   SEO: FiSearch,
   "Social Media": FiShare2,
   "Graphic Design": FiPenTool,
@@ -41,12 +44,16 @@ const categoryIcons: Record<Category, IconType> = {
   Ads: FiTarget,
 };
 
-// TODO: Real project, image ar link diye replace korben
 const projects: Project[] = [
   {
     title: "Nexora E-commerce Website",
     category: "Web Development",
     href: "/portfolio/nexora",
+  },
+  {
+    title: "Mobile Banking Application",
+    category: "Mobile Development",
+    href: "/portfolio/mobile-banking",
   },
   {
     title: "Medico Plus Brand Identity",
@@ -77,7 +84,8 @@ const projects: Project[] = [
 
 const Portfolio = () => {
   const rootRef = useRef<HTMLElement>(null);
-  const isFirstRender = useRef<boolean>(true);
+  const isFirstRender = useRef(true);
+
   const [active, setActive] = useState<Category | "All">("All");
 
   const categories = useMemo<(Category | "All")[]>(
@@ -90,37 +98,66 @@ const Portfolio = () => {
       ? projects
       : projects.filter((project) => project.category === active);
 
-  /* Scroll e ashle prothom bar reveal */
+  // Initial Animation
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from("[data-head]", {
-          y: 30,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: "power3.out",
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "power3.out",
+          },
           scrollTrigger: {
-            trigger: "[data-head]",
+            trigger: rootRef.current,
             start: "top 85%",
             once: true,
           },
         });
 
-        ScrollTrigger.batch("[data-card]", {
-          start: "top 90%",
-          once: true,
-          onEnter: (batch) =>
-            gsap.from(batch, {
-              y: 50,
+        tl.from("[data-title]", {
+          y: 30,
+          opacity: 0,
+          duration: 0.7,
+        })
+          .from(
+            "[data-description]",
+            {
+              y: 20,
               opacity: 0,
-              duration: 0.8,
+              duration: 0.6,
+            },
+            "-=0.4",
+          )
+          .from(
+            "[data-link]",
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.5,
+            },
+            "-=0.3",
+          )
+          .from(
+            "[data-filter]",
+            {
+              y: 15,
+              opacity: 0,
+              duration: 0.4,
+              stagger: 0.08,
+            },
+            "-=0.2",
+          )
+          .from(
+            "[data-card]",
+            {
+              y: 35,
+              opacity: 0,
+              duration: 0.6,
               stagger: 0.12,
-              ease: "power3.out",
-            }),
-        });
+            },
+            "-=0.1",
+          );
       });
 
       return () => mm.revert();
@@ -128,7 +165,7 @@ const Portfolio = () => {
     { scope: rootRef },
   );
 
-  /* Filter change hole card gulo notun kore animate hobe */
+  // Filter Animation
   useGSAP(
     () => {
       if (isFirstRender.current) {
@@ -137,24 +174,36 @@ const Portfolio = () => {
       }
 
       const mm = gsap.matchMedia();
+
       mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const cards = gsap.utils.toArray<HTMLElement>("[data-card]");
+
+        if (!cards.length) return;
+
         gsap.fromTo(
-          "[data-card]",
-          { y: 24, opacity: 0 },
+          cards,
+          {
+            y: 20,
+            opacity: 0,
+          },
           {
             y: 0,
             opacity: 1,
             duration: 0.5,
             stagger: 0.08,
             ease: "power2.out",
-            overwrite: "auto",
+            clearProps: "all",
           },
         );
       });
 
       return () => mm.revert();
     },
-    { scope: rootRef, dependencies: [active] },
+    {
+      scope: rootRef,
+      dependencies: [active],
+      revertOnUpdate: true,
+    },
   );
 
   return (
@@ -164,13 +213,14 @@ const Portfolio = () => {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <h2
-              data-head
+              data-title
               className="text-ink text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl"
             >
               Our recent work
             </h2>
+
             <p
-              data-head
+              data-description
               className="text-ink-soft mt-4 text-base leading-relaxed sm:text-lg"
             >
               A few projects we have delivered for businesses like yours.
@@ -178,7 +228,7 @@ const Portfolio = () => {
           </div>
 
           <a
-            data-head
+            data-link
             href="/portfolio"
             className="text-brand hover:text-brand-dark group inline-flex items-center gap-2 text-[15px] font-semibold transition-colors"
           >
@@ -189,16 +239,17 @@ const Portfolio = () => {
 
         {/* Filter */}
         <div
-          data-head
           role="tablist"
           aria-label="Filter projects by category"
           className="mt-10 flex flex-wrap gap-3"
         >
           {categories.map((category) => {
             const isActive = category === active;
+
             return (
               <button
                 key={category}
+                data-filter
                 type="button"
                 role="tab"
                 aria-selected={isActive}
@@ -219,6 +270,7 @@ const Portfolio = () => {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {visibleProjects.map((project, i) => {
             const Icon = categoryIcons[project.category];
+
             return (
               <a
                 key={project.title}
@@ -247,7 +299,7 @@ const Portfolio = () => {
                     </div>
                   )}
 
-                  {/* Hover overlay */}
+                  {/* Hover Overlay */}
                   <div className="bg-ink/50 absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                     <span className="bg-paper text-brand flex h-14 w-14 items-center justify-center rounded-full text-2xl">
                       <FiArrowUpRight />
@@ -260,6 +312,7 @@ const Portfolio = () => {
                   <span className="bg-brand-soft text-brand inline-block rounded-full px-3 py-1 text-xs font-semibold">
                     {project.category}
                   </span>
+
                   <h3 className="text-ink group-hover:text-brand mt-3 text-lg font-bold transition-colors">
                     {project.title}
                   </h3>
